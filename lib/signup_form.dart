@@ -37,11 +37,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Add user data to the collection
         await users.add(userData);
 
-        // Show success message or perform other actions
-        print('User created successfully!');
       } catch (e) {
-        // Handle any errors that occur during the Firestore operation
-        print('Error creating user: $e');
+        print(e);
       }
     }
   }
