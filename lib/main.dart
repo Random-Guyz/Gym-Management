@@ -14,7 +14,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  ThemeData darkTheme = ThemeData(
+ final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     colorScheme: const ColorScheme.dark(),
     textTheme: const TextTheme(
