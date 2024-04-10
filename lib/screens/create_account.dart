@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_management_2/login_form.dart';
+import 'package:gym_management_2/screens/login_form.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,6 +16,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _name = '';
   String _email = '';
   String _password = '';
+  String _gymname = "";
+  String _phone = "";
+
   // String _confirmPassword = '';
 
   Future<void> _saveForm() async {
@@ -31,12 +34,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Map<String, dynamic> userData = {
           'name': _name,
           'email': _email,
-          // Password should not be stored directly in Firestore due to security concerns. Consider using a secure authentication method like Firebase Authentication.
           'password': _password,
+          'gymname': _gymname,
+          'phone': _phone
         };
         // Add user data to the collection
         await users.add(userData);
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account created successfully!'),
+            duration: Duration(seconds: 3), // Optional: Set snackbar duration
+          ),
+        );
+
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()));
       } catch (e) {
         print(e);
       }
@@ -104,6 +117,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         TextFormField(
                           cursorColor: Colors.lightGreenAccent,
                           decoration: InputDecoration(
+                              hintText: 'Gym Name',
+                              hintStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.normal),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14.0),
+                                  borderSide: BorderSide.none),
+                              filled: true,
+                              fillColor: Colors.grey[900],
+                              prefixIcon: const Icon(
+                                Icons.fitness_center,
+                              )),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a password';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _gymname = value!.trim();
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          cursorColor: Colors.lightGreenAccent,
+                          decoration: InputDecoration(
                               hintText: 'Email',
                               hintStyle: const TextStyle(
                                   color: Colors.white,
@@ -133,8 +172,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           cursorColor: Colors.lightGreenAccent,
+                          keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
-                              hintText: 'Password',
+                              hintText: 'Phone',
+                              hintStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.normal),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14.0),
+                                  borderSide: BorderSide.none),
+                              filled: true,
+                              fillColor: Colors.grey[900],
+                              prefixIcon: const Icon(
+                                Icons.phone,
+                              )),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone';
+                            }
+                            if (!RegExp(
+                                    r"^((\+)?([ \-\.]?)?\(?0?91\)?[ \-\.]?)?[789]\d{9}$")
+                                .hasMatch(value)) {
+                              return 'Please enter a valid phone number';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _phone = value!;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          cursorColor: Colors.lightGreenAccent,
+                          decoration: InputDecoration(
+                              hintText: 'Create Password',
                               hintStyle: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.normal),
@@ -191,7 +262,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const LoginScreen()));
+                                        builder: (context) =>
+                                            const LoginScreen()));
                               },
                               child: const Text(
                                 'Login',

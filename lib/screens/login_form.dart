@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_management_2/signup_form.dart';
+import 'package:gym_management_2/screens/create_account.dart';
+
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +18,35 @@ class _LoginScreenState extends State<LoginScreen> {
   String _name = '';
   String _email = '';
 
+  Future<void> _checkUsers() async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('users');
+
+    // Query to find documents where "email" field matches entered email
+    Query query = users.where('email', isEqualTo: _email).where('name', isEqualTo: _name);
+
+    query.get().then((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login Successful!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User not found'),
+            duration: Duration(seconds: 3), // Optional: Set snackbar duration
+          ),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +61,6 @@ class _LoginScreenState extends State<LoginScreen> {
       // ),
       body: Column(
         children: <Widget>[
-
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(30.0),
@@ -38,8 +69,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Hey, there!", style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),),
-                    const SizedBox(height: 25,),
+                    const Text(
+                      "Hey, there!",
+                      style:
+                          TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
                     TextFormField(
                       cursorColor: Colors.lightGreenAccent,
                       decoration: InputDecoration(
@@ -113,6 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             // For now, just print the data
                             print('Name: $_name');
                             print('Email: $_email');
+                            _checkUsers();
                           }
                         },
                         child: Text(
@@ -140,7 +178,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const SignUpScreen()));
+                                    builder: (context) =>
+                                        const SignUpScreen()));
                           },
                           child: const Text(
                             'Create account',
