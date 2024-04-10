@@ -191,7 +191,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               return 'Please enter your phone';
                             }
                             if (!RegExp(
-                                    r"^((\+)?([ \-\.]?)?\(?0?91\)?[ \-\.]?)?[789]\d{9}$")
+                                    r"^((\+)?([ \-.]?)?\(?0?91\)?[ \-.]?)?[789]\d{9}$")
                                 .hasMatch(value)) {
                               return 'Please enter a valid phone number';
                             }
