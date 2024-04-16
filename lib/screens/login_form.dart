@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gym_management_2/screens/create_account.dart';
 
 import 'home_screen.dart';
+import 'new_create_account.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,7 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
     CollectionReference users = firestore.collection('users');
 
     // Query to find documents where "email" field matches entered email
-    Query query = users.where('email', isEqualTo: _email).where('name', isEqualTo: _name);
+    Query query =
+        users.where('email', isEqualTo: _email).where('name', isEqualTo: _name);
 
     query.get().then((querySnapshot) {
       if (querySnapshot.docs.isNotEmpty) {
@@ -34,8 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
 
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -191,6 +193,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
+// New create account in development
+//                   Delete from here
+
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Create_Account()));
+                      },
+                      child: const Text(
+                        'New Create account',
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.white, // Set link color to green
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    // to here!
                   ],
                 ),
               ),

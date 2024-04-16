@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_management_2/screens/login_form.dart';
 
@@ -12,19 +11,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int myIndex = 0;
   late List<Widget> content = [
-    Text("Home Screen"),
-    Text("Gyms Screen"),
+    const Text("Home Screen"),
+    const Text("Gyms Screen"),
     Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Profile Screen"),
+        const Text("Profile Screen"),
         ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.lightGreenAccent),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
               );
             },
             child: Text(
@@ -50,14 +49,14 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         currentIndex: myIndex,
-        selectedIconTheme: IconThemeData(
+        selectedIconTheme: const IconThemeData(
           color: Colors.lightGreenAccent,
           size: 30,
         ),
-        unselectedIconTheme: IconThemeData(
+        unselectedIconTheme: const IconThemeData(
           size: 30,
         ),
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
               icon: Icon(Icons.fitness_center), label: "Apps"),

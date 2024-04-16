@@ -61,7 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Container(
       color: Colors.black,
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        // resizeToAvoidBottomInset: false,
         // appBar: AppBar(
         //   title: Text(
         //     "Signup Page",
@@ -191,7 +191,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               return 'Please enter your phone';
                             }
                             if (!RegExp(
-                                    r"^((\+)?([ \-.]?)?\(?0?91\)?[ \-.]?)?[789]\d{9}$")
+                                r"^((\+)?([ \-.]?)?\(?0?91\)?[ \-.]?)?[789]\d{9}$")
                                 .hasMatch(value)) {
                               return 'Please enter a valid phone number';
                             }
@@ -263,7 +263,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const LoginScreen()));
+                                        const LoginScreen()));
                               },
                               child: const Text(
                                 'Login',
