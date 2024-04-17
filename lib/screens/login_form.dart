@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_management_2/screens/create_account.dart';
+import 'package:gym_management_2/screens/Create_Account.dart';
 
 import 'home_screen.dart';
-import 'new_create_account.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,19 +15,38 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>(); // Key for the form
 
   // Form fields data
-  String _name = '';
-  String _email = '';
+  String? _name;
+  String? _email;
 
   Future<void> _checkUsers() async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    CollectionReference users = firestore.collection('users');
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    // Query to find documents where "email" field matches entered email
-    Query query =
-        users.where('email', isEqualTo: _email).where('name', isEqualTo: _name);
+      // Collection references for each collection
+      CollectionReference gymOwners = firestore.collection('gym_owners');
+      CollectionReference trainers = firestore.collection('trainers');
+      CollectionReference members = firestore.collection('members');
 
-    query.get().then((querySnapshot) {
-      if (querySnapshot.docs.isNotEmpty) {
+      // Query to find documents where "email" field matches entered email
+      Query gymOwnersQuery = gymOwners
+          .where('email', isEqualTo: _email)
+          .where('name', isEqualTo: _name);
+      Query trainersQuery = trainers
+          .where('email', isEqualTo: _email)
+          .where('name', isEqualTo: _name);
+      Query membersQuery = members
+          .where('email', isEqualTo: _email)
+          .where('name', isEqualTo: _name);
+
+      // Combine queries into a single list
+      List<Query> queries = [gymOwnersQuery, trainersQuery, membersQuery];
+
+      // Use Future.wait to execute all queries concurrently
+      List<QuerySnapshot> querySnapshots =
+          await Future.wait(queries.map((query) => query.get()));
+
+      // Check if any query returned a non-empty result
+      if (querySnapshots.any((snapshot) => snapshot.docs.isNotEmpty)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Login Successful!'),
@@ -42,25 +60,24 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('User not found'),
-            duration: Duration(seconds: 3), // Optional: Set snackbar duration
+            duration: Duration(seconds: 2),
           ),
         );
       }
-    });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Something went wrong with Firebase'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      // appBar: AppBar(
-      //   title: Text(
-      //     "Login",
-      //     style: TextStyle(
-      //         color: Colors.green), // Set app bar title color to green
-      //   ),
-      //   centerTitle: true,
-      // ),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -150,8 +167,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             // You can now use _name and _email variables
                             // for further processing, e.g., submitting to a server
                             // For now, just print the data
-                            print('Name: $_name');
-                            print('Email: $_email');
+                            // print('Name: $_name');
+                            // print('Email: $_email');
                             _checkUsers();
                           }
                         },
@@ -181,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const SignUpScreen()));
+                                        const CreateAccount()));
                           },
                           child: const Text(
                             'Create account',
@@ -193,27 +210,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-// New create account in development
-//                   Delete from here
-
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Create_Account()));
-                      },
-                      child: const Text(
-                        'New Create account',
-                        style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.white, // Set link color to green
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    // to here!
                   ],
                 ),
               ),
