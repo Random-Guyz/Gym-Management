@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:gym_management_2/screens/login_form.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MemberHomeScreen extends StatefulWidget {
+  final String? emailId;
+  final String? pass;
+
+  // const MemberHomeScreen({super.key}); // Normal Constructor
+  const MemberHomeScreen({super.key, required this.emailId, required this.pass});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MemberHomeScreen> createState() => _MemberHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MemberHomeScreenState extends State<MemberHomeScreen> {
   int myIndex = 0;
   late List<Widget> content = [
-    const Text("Home Screen"),
-    const Text("Gyms Screen"),
+    const Text("Member Page"),
+    const Text("Demo Page"),
     Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

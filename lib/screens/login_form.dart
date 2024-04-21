@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_management_2/screens/Create_Account.dart';
-
-import 'home_screen.dart';
+import 'package:gym_management_2/screens/member_home_screen.dart';
+import 'package:gym_management_2/screens/owner_home_screen.dart';
+import 'package:gym_management_2/screens/trainer_home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>(); // Key for the form
 
   // Form fields data
-  String? _name;
+  String? _password;
   String? _email;
 
   Future<void> _checkUsers() async {
@@ -30,13 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
       // Query to find documents where "email" field matches entered email
       Query gymOwnersQuery = gymOwners
           .where('email', isEqualTo: _email)
-          .where('name', isEqualTo: _name);
+          .where('pass', isEqualTo: _password);
       Query trainersQuery = trainers
           .where('email', isEqualTo: _email)
-          .where('name', isEqualTo: _name);
+          .where('pass', isEqualTo: _password);
       Query membersQuery = members
           .where('email', isEqualTo: _email)
-          .where('name', isEqualTo: _name);
+          .where('pass', isEqualTo: _password);
 
       // Combine queries into a single list
       List<Query> queries = [gymOwnersQuery, trainersQuery, membersQuery];
@@ -54,8 +55,46 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
 
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
+        // Determine the account type based on the index of the non-empty query
+        int accountTypeIndex =
+            querySnapshots.indexWhere((snapshot) => snapshot.docs.isNotEmpty);
+
+        // Navigate to the appropriate home screen based on the account type
+        switch (accountTypeIndex) {
+          case 0:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    OwnerHomeScreen(emailId: _email, pass: _password),
+              ),
+            );
+            break;
+          case 1:
+            // Navigate to trainer home screen
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        TrainerHomeScreen(emailId: _email!, pass: _password!)));
+            break;
+          case 2:
+            // Navigate to member home screen
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        MemberHomeScreen(emailId: _email, pass: _password)));
+            break;
+          default:
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Unknown account type'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            break;
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -96,32 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 25,
                     ),
-                    TextFormField(
-                      cursorColor: Colors.lightGreenAccent,
-                      decoration: InputDecoration(
-                          hintText: 'Name',
-                          hintStyle: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.normal),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14.0),
-                              borderSide: BorderSide.none),
-                          filled: true,
-                          fillColor: Colors.grey[900],
-                          prefixIcon: const Icon(
-                            Icons.person,
-                          )),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _name = value!;
-                      },
-                    ),
-                    const SizedBox(height: 16),
+
                     TextFormField(
                       // Set text color to green
                       cursorColor: Colors.lightGreenAccent,
@@ -152,6 +166,36 @@ class _LoginScreenState extends State<LoginScreen> {
                         _email = value!;
                       },
                     ),
+                    const SizedBox(
+                        height:
+                        16),
+                    TextFormField(
+                      cursorColor: Colors.lightGreenAccent,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                          hintText: 'pass',
+                          hintStyle: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14.0),
+                              borderSide: BorderSide.none),
+                          filled: true,
+                          fillColor: Colors.grey[900],
+                          prefixIcon: const Icon(
+                            Icons.key,
+                          )),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _password = value!;
+                      },
+                    ),
+                    const SizedBox(height: 16),
 
                     const SizedBox(height: 16), // Add some space between fields
                     SizedBox(
@@ -164,10 +208,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (_formKey.currentState!.validate()) {
                             // Save form data
                             _formKey.currentState!.save();
-                            // You can now use _name and _email variables
+                            // You can now use _password and _email variables
                             // for further processing, e.g., submitting to a server
                             // For now, just print the data
-                            // print('Name: $_name');
+                            // print('pass: $_password');
                             // print('Email: $_email');
                             _checkUsers();
                           }
