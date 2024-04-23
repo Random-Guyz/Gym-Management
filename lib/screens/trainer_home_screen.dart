@@ -15,10 +15,10 @@ class TrainerHomeScreen extends StatefulWidget {
 
 class _TrainerHomeScreenState extends State<TrainerHomeScreen> {
   int myIndex = 0;
-  late List<Widget> content = [
-    const Text("Trainer Page"),
-    const Text("Shadow Page"),
 
+  late List<Widget> content = [
+    const Text("Trainer's Home Page"),
+    const Text("Shadow Page"),
     Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
