@@ -7,8 +7,7 @@ class OwnerHomeScreen extends StatefulWidget {
   final String? pass;
 
   // const OwnerHomeScreen({super.key}); // Normal Constructor
-  const OwnerHomeScreen(
-      {super.key, required this.emailId, required this.pass});
+  const OwnerHomeScreen({super.key, required this.emailId, required this.pass});
 
   @override
   State<OwnerHomeScreen> createState() => _OwnerHomeScreenState();
@@ -43,21 +42,19 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
           if (data is Map) {
             _fetchedName = data['name'];
           }
-          print("username = {$_fetchedName}");
         });
       } else {
         setState(() {
           _fetchedName = "User not found";
         });
-        print("username = {$_fetchedName}");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Something went wrong with Firebase'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text('Something went wrong with Firebase'),
+      //     duration: Duration(seconds: 2),
+      //   ),
+      // );
     }
   }
 
@@ -97,7 +94,9 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
       future: _fetchUser(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator( valueColor: AlwaysStoppedAnimation<Color>(Colors.lightGreenAccent),); // Show a loading indicator while fetching data
+          return const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.lightGreenAccent),
+          ); // Show a loading indicator while fetching data
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
@@ -117,13 +116,12 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CircleAvatar(
+                        const CircleAvatar(
                           backgroundColor: Colors.lightGreenAccent,
                           radius: 35,
                         ),
                         Text(
-                          _fetchedName ?? 'No name found',
-                          style: TextStyle(color: Colors.white),
+                          _fetchedName,
                         ) // Show a default text if _fetchedName is null
                       ],
                     ),
@@ -138,7 +136,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
   }
 
   Widget getMembers() {
-    return Column(
+    return const Column(
       children: [],
     );
   }

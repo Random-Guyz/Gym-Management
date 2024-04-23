@@ -7,11 +7,6 @@ class getUserDetails extends StatefulWidget {
   final String memberType;
   final PageController pageController;
 
-  // final String? _name;
-  // final String? _phone;
-  // final String? _email;
-  // final String? _password;
-
   const getUserDetails(
       {super.key, required this.memberType, required this.pageController});
   @override
@@ -20,11 +15,6 @@ class getUserDetails extends StatefulWidget {
 
 class _getUserDetailsState extends State<getUserDetails> {
   FirebaseFirestore fireStore = FirebaseFirestore.instance;
-
-  // String? _name;
-  // String? _phone;
-  // String? _email;
-  // String? _password;
 
   String? _name;
   String? _phone;

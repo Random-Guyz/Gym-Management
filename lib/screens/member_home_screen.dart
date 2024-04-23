@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_management_2/screens/exercise_screen.dart';
 import 'package:gym_management_2/screens/login_form.dart';
 
 class MemberHomeScreen extends StatefulWidget {
@@ -6,7 +7,8 @@ class MemberHomeScreen extends StatefulWidget {
   final String? pass;
 
   // const MemberHomeScreen({super.key}); // Normal Constructor
-  const MemberHomeScreen({super.key, required this.emailId, required this.pass});
+  const MemberHomeScreen(
+      {super.key, required this.emailId, required this.pass});
 
   @override
   State<MemberHomeScreen> createState() => _MemberHomeScreenState();
@@ -15,8 +17,8 @@ class MemberHomeScreen extends StatefulWidget {
 class _MemberHomeScreenState extends State<MemberHomeScreen> {
   int myIndex = 0;
   late List<Widget> content = [
-    const Text("Member Page"),
     const Text("Demo Page"),
+    const ExerciseScreen(),
     Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

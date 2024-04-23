@@ -38,6 +38,10 @@ dependencies:
   cloud_firestore: ^4.16.0
   firebase_auth: ^4.19.0
 
+  url_launcher: ^6.0.13
+  youtube_player_flutter: ^9.0.1
+
+#  exercises: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -61,9 +65,17 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    #muscles
+    - assets/logo.png
+    - assets/muscles/
+    - assets/exercises/Chest/
+    - assets/exercises/Back/
+    - assets/exercises/Abs/
+    - assets/exercises/Biceps/
+    - assets/exercises/Triceps/
+    - assets/exercises/Legs/
+    - assets/exercises/Shoulders/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

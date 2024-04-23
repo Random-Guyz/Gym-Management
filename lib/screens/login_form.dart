@@ -173,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       cursorColor: Colors.lightGreenAccent,
                       obscureText: true,
                       decoration: InputDecoration(
-                          hintText: 'pass',
+                          hintText: 'Password',
                           hintStyle: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.normal),
