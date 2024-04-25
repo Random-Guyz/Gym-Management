@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_management_2/screens/Create_Account.dart';
+import 'package:gym_management_2/screens/create_account.dart';
 import 'package:gym_management_2/screens/member_home_screen.dart';
 import 'package:gym_management_2/screens/owner_home_screen.dart';
 import 'package:gym_management_2/screens/trainer_home_screen.dart';
+
+import '../utils/show_message.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -48,12 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Check if any query returned a non-empty result
       if (querySnapshots.any((snapshot) => snapshot.docs.isNotEmpty)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login Successful!'),
-            duration: Duration(seconds: 3),
-          ),
-        );
+        showMessage(context, "Login Successful!");
 
         // Determine the account type based on the index of the non-empty query
         int accountTypeIndex =
@@ -96,20 +93,16 @@ class _LoginScreenState extends State<LoginScreen> {
             break;
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('User not found'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+        showMessage(context, "User not found");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Something went wrong with Firebase'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      showMessage(context, "Something went wrong with Firebase");
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text('Something went wrong with Firebase'),
+      //     duration: Duration(seconds: 2),
+      //   ),
+      // );
     }
   }
 
@@ -166,9 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         _email = value!;
                       },
                     ),
-                    const SizedBox(
-                        height:
-                        16),
+                    const SizedBox(height: 16),
                     TextFormField(
                       cursorColor: Colors.lightGreenAccent,
                       obscureText: true,

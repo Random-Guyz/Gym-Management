@@ -43,7 +43,7 @@ class ExerciseScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BicepsExerciseScreen(
+                    builder: (context) => const BicepsExerciseScreen(
                       muscleName: 'Biceps',
                       imagePath: 'assets/muscles/biceps.jpg',
                     ),
@@ -58,7 +58,7 @@ class ExerciseScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TricepsExerciseScreen(
+                    builder: (context) => const TricepsExerciseScreen(
                       muscleName: 'Triceps',
                       imagePath: 'assets/muscles/triceps.jpg',
                     ),
@@ -73,7 +73,7 @@ class ExerciseScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AbsExerciseScreen(
+                    builder: (context) => const AbsExerciseScreen(
                       muscleName: 'Abs',
                       imagePath: 'assets/muscles/abs.jpg',
                     ),
@@ -88,7 +88,7 @@ class ExerciseScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ShoulderExerciseScreen(
+                    builder: (context) => const ShoulderExerciseScreen(
                       muscleName: 'Shoulders',
                       imagePath: 'assets/muscles/Shoulders.jpg',
                     ),
@@ -103,7 +103,7 @@ class ExerciseScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LegsExerciseScreen(
+                    builder: (context) => const LegsExerciseScreen(
                       muscleName: 'Legs',
                       imagePath: 'assets/muscles/legs.jpg',
                     ),
@@ -118,7 +118,7 @@ class ExerciseScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BackExerciseScreen(
+                    builder: (context) => const BackExerciseScreen(
                       muscleName: 'Back',
                       imagePath: 'assets/muscles/back.jpg',
                     ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/show_message.dart';
 import 'login_form.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -27,6 +28,7 @@ class _CreateAccountState extends State<CreateAccount> {
   String? _name;
   String? _phone;
   String? _email;
+  String? _gym_name;
   String? _password;
 
   Future<void> storeData() async {
@@ -38,6 +40,7 @@ class _CreateAccountState extends State<CreateAccount> {
           'name': _name,
           'phone': _phone,
           'email': _email,
+          'gym_name': _gym_name,
           'pass': _password,
         });
         break;
@@ -48,6 +51,7 @@ class _CreateAccountState extends State<CreateAccount> {
           'name': _name,
           'phone': _phone,
           'email': _email,
+          'gym_name': _gym_name,
           'pass': _password,
         });
         break;
@@ -58,11 +62,57 @@ class _CreateAccountState extends State<CreateAccount> {
           'name': _name,
           'phone': _phone,
           'email': _email,
+          'gym_name': _gym_name,
           'pass': _password,
         });
         break;
       default:
         const Text("Collection not found :(");
+    }
+  }
+
+  Future<void> _checkUsers() async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Collection references for each collection
+      CollectionReference gymOwners = firestore.collection('gym_owners');
+      CollectionReference trainers = firestore.collection('trainers');
+      CollectionReference members = firestore.collection('members');
+
+      // Query to find documents where "email" field matches entered email
+      Query gymOwnersQuery = gymOwners
+          .where('email', isEqualTo: _email)
+          .where('pass', isEqualTo: _password);
+      Query trainersQuery = trainers
+          .where('email', isEqualTo: _email)
+          .where('pass', isEqualTo: _password);
+      Query membersQuery = members
+          .where('email', isEqualTo: _email)
+          .where('pass', isEqualTo: _password);
+
+      // Combine queries into a single list
+      List<Query> queries = [gymOwnersQuery, trainersQuery, membersQuery];
+
+      // Use Future.wait to execute all queries concurrently
+      List<QuerySnapshot> querySnapshots =
+          await Future.wait(queries.map((query) => query.get()));
+
+      // Check if any query returned a non-empty result
+      if (querySnapshots.any((snapshot) => snapshot.docs.isNotEmpty)) {
+        showMessage(context, "User Already Exists!");
+      } else {
+        await storeData();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Account Created'),
+          duration: Duration(seconds: 1),
+        ));
+
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()));
+      }
+    } catch (e) {
+      showMessage(context, "Something went wrong with Firebase");
     }
   }
 
@@ -262,6 +312,35 @@ class _CreateAccountState extends State<CreateAccount> {
               });
             },
           ),
+
+          const SizedBox(height: 16),
+          TextFormField(
+            cursorColor: Colors.lightGreenAccent,
+            decoration: InputDecoration(
+                hintText: 'Gym',
+                hintStyle: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.normal),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14.0),
+                    borderSide: BorderSide.none),
+                filled: true,
+                fillColor: Colors.grey[900],
+                prefixIcon: const Icon(
+                  Icons.fitness_center,
+                )),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter gym name';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              setState(() {
+                _gym_name = value!;
+              });
+            },
+          ),
+
           const SizedBox(height: 16),
           TextFormField(
             cursorColor: Colors.lightGreenAccent,
@@ -361,17 +440,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     if (_formkey.currentState!.validate()) {
                       _formkey.currentState!.save();
                       try {
-                        await storeData();
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text('Account Created'),
-                          duration: Duration(seconds: 1),
-                        ));
-
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()));
+                        await _checkUsers();
                       } catch (e) {
                         print("Something Went Wrong!");
                       }

@@ -14,7 +14,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
- final ThemeData darkTheme = ThemeData(
+  final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     colorScheme: const ColorScheme.dark(),
     textTheme: const TextTheme(
@@ -28,9 +28,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Gym Management',
       theme: darkTheme,
-      home: SplashScreen(), // Use LoginForm here
-      // home: const OwnerHomeScreen(emailId: "qqq@qqq.com", pass: "qqq"), // Use LoginForm here
-
+      home: const SplashScreen(), // Use LoginForm here
+      // home: const OwnerHomeScreen(
+      //   emailId: 'kaif@mail.com',
+      //   pass: 'kaif',
+      // ), // Use LoginForm here
     );
   }
 }

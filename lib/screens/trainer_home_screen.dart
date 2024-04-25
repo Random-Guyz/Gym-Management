@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_management_2/screens/login_form.dart';
 
+
 class TrainerHomeScreen extends StatefulWidget {
   final String emailId;
   final String pass;
@@ -17,8 +18,8 @@ class _TrainerHomeScreenState extends State<TrainerHomeScreen> {
   int myIndex = 0;
 
   late List<Widget> content = [
-    const Text("Trainer's Home Page"),
-    const Text("Shadow Page"),
+   const Text("Trainer Screen"),
+  const Text("Demo Screen"),
     Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
