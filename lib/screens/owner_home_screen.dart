@@ -2,6 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_management_2/screens/login_form.dart';
 
+class Member {
+  final String name;
+  final String email;
+  // Add other member properties as needed
+
+  Member({required this.name, required this.email});
+
+  // Add a factory constructor (optional) to create a Member from a Map
+
+  factory Member.fromMap(Map<String, dynamic> data) => Member(
+        name: data['name'],
+        email: data['email'],
+      );
+}
+
 class OwnerHomeScreen extends StatefulWidget {
   final String? emailId;
   final String? pass;
@@ -26,6 +41,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     getMembersList(),
     getTrainers()
   ];
+
   String _fetchedName = "";
 
   Future<void> _fetchUser() async {
@@ -33,7 +49,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
       // Collection references for each collection
-      CollectionReference members = firestore.collection('members');
+      CollectionReference members = firestore.collection('gym_owners');
 
       final querySnapshot = await members
           .where('email', isEqualTo: widget.emailId)
@@ -59,6 +75,47 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
           duration: Duration(seconds: 2),
         ),
       );
+    }
+  }
+
+  Future<List<Member>> _fetchMembers() async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Get the gym owner's document based on the email
+      final gymOwnerDoc = await firestore
+          .collection('gym_owners')
+          .where('email', isEqualTo: widget.emailId)
+          .get()
+          .then((querySnapshot) => querySnapshot.docs.first);
+
+      if (gymOwnerDoc == null) {
+        // Handle case where gym owner document is not found
+        return [];
+      }
+
+      // Extract the gym name from the gym owner document
+      final gymName = gymOwnerDoc.get('gym_name');
+
+      if (gymName == null) {
+        // Handle case where gym name is missing in gym owner document
+        return [];
+      }
+
+      // Stream or Future-based query to fetch members with matching gym name
+      final membersStream = firestore
+          .collection('members')
+          .where('gym_name', isEqualTo: gymName)
+          .snapshots(); // For real-time updates
+
+      // Convert stream to a list if needed (for one-time fetching)
+      final memberList = await membersStream.first.then((snapshot) =>
+          snapshot.docs.map((doc) => Member.fromMap(doc.data())).toList());
+
+      return memberList;
+    } catch (e) {
+      print(e); // Log the error for debugging
+      return [];
     }
   }
 
@@ -169,13 +226,13 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
       future: checkMembersExist(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
           bool membersExist = snapshot.data as bool;
           if (!membersExist) {
-            return Center(child: Text('No users'));
+            return const Center(child: Text('No users'));
           } else {
             return getMembersList();
           }
@@ -191,105 +248,213 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
   }
 
   Widget getMembersList() {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('members').snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) {
-          return CircularProgressIndicator();
-        }
-        return ListView.builder(
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            var memberData =
-                snapshot.data!.docs[index].data() as Map<String, dynamic>;
-            // Outside padding
-            return Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade900),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      // User Image
-                      CircleAvatar(
-                        radius: 23,
-                        backgroundImage: NetworkImage(memberData['avatarUrl'] ??
-                            'https://picsum.photos/250?image=9'),
-                      ),
-                      SizedBox(width: 30),
-                      // User details
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+    return FutureBuilder(
+      future: _fetchMembers(), // Call _fetchMembers to retrieve members
+      builder: (BuildContext context, AsyncSnapshot<List<Member>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          final members = snapshot.data ?? []; // Handle potential null value
+          if (members.isEmpty) {
+            return const Center(child: Text('No members in your gym'));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                var memberData = snapshot.data?[index];
+                // Outside padding
+                return Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade900),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
                         children: [
-                          // Text(memberData['username'] ?? ''),
-                          // Text(memberData['detail'] ?? ''),
-                          Text('Username'),
-                          Text('detail'),
-                        ],
-                      ),
-                      Spacer(),
-                      // Action Buttons
-                      Row(
-                        children: [
-                          TextButton(
-                              onPressed: () {},
-                              style: ButtonStyle(
-                                overlayColor:
-                                    MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    if (states
-                                        .contains(MaterialState.hovered)) {
-                                      return Colors
-                                          .transparent; // Return transparent color for hovered state
-                                    }
-                                    return Colors.green
-                                        .shade200; // Use default overlay color for other states
-                                  },
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.edit,
-                                size: 20,
-                                color: Colors.lightGreenAccent,
-                              )),
-                          SizedBox(
-                            width: 2,
+                          // User Image
+                          CircleAvatar(
+                            radius: 23,
+                            backgroundImage: NetworkImage(
+                                'https://picsum.photos/250?image=9'),
                           ),
-                          TextButton(
-                              onPressed: () {},
-                              style: ButtonStyle(
-                                overlayColor:
-                                    MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    if (states
-                                        .contains(MaterialState.hovered)) {
-                                      return Colors
-                                          .transparent; // Return transparent color for hovered state
-                                    }
-                                    return Colors.grey
-                                        .shade900; // Use default overlay color for other states
-                                  },
-                                ),
+                          const SizedBox(width: 30),
+                          // User details
+                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(memberData?.name ?? "Name"),
+                              Text(memberData?.email ?? "Email"),
+                            ],
+                          ),
+                          const Spacer(),
+                          // Action Buttons
+                          Row(
+                            children: [
+                              TextButton(
+                                  onPressed: () {},
+                                  style: ButtonStyle(
+                                    overlayColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (Set<MaterialState> states) {
+                                        if (states
+                                            .contains(MaterialState.hovered)) {
+                                          return Colors
+                                              .transparent; // Return transparent color for hovered state
+                                        }
+                                        return Colors.green
+                                            .shade200; // Use default overlay color for other states
+                                      },
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    size: 20,
+                                    color: Colors.white,
+                                  )),
+                              const SizedBox(
+                                width: 1,
                               ),
-                              child: Icon(
-                                Icons.delete,
-                                size: 20,
-                                color: Colors.redAccent,
-                              )),
+                              TextButton(
+                                  onPressed: () {},
+                                  style: ButtonStyle(
+                                    overlayColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (Set<MaterialState> states) {
+                                        if (states
+                                            .contains(MaterialState.hovered)) {
+                                          return Colors
+                                              .transparent; // Return transparent color for hovered state
+                                        }
+                                        return Colors.grey
+                                            .shade900; // Use default overlay color for other states
+                                      },
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.delete,
+                                    size: 20,
+                                    color: Colors.white,
+                                  )),
+                            ],
+                          )
                         ],
-                      )
-                    ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             );
-          },
-        );
+          }
+        }
       },
     );
   }
+
+  // Widget getMembersList() {
+  //   return StreamBuilder(
+  //     stream: FirebaseFirestore.instance.collection('members').snapshots(),
+  //     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+  //       if (!snapshot.hasData) {
+  //         return const CircularProgressIndicator();
+  //       }
+  //       return ListView.builder(
+  //         itemCount: snapshot.data!.docs.length,
+  //         itemBuilder: (context, index) {
+  //           var memberData =
+  //               snapshot.data!.docs[index].data() as Map<String, dynamic>;
+  //           // Outside padding
+  //           return Padding(
+  //             padding: const EdgeInsets.all(18.0),
+  //             child: Container(
+  //               decoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.circular(10),
+  //                 border: Border.all(color: Colors.grey.shade900),
+  //               ),
+  //               child: Padding(
+  //                 padding: const EdgeInsets.all(20),
+  //                 child: Row(
+  //                   children: [
+  //                     // User Image
+  //                     CircleAvatar(
+  //                       radius: 23,
+  //                       backgroundImage: NetworkImage(memberData['avatarUrl'] ??
+  //                           'https://picsum.photos/250?image=9'),
+  //                     ),
+  //                     const SizedBox(width: 30),
+  //                     // User details
+  //                     const Column(
+  //                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                       children: [
+  //                         // Text(memberData['username'] ?? ''),
+  //                         // Text(memberData['detail'] ?? ''),
+  //                         Text('Username'),
+  //                         Text('detail'),
+  //                       ],
+  //                     ),
+  //                     const Spacer(),
+  //                     // Action Buttons
+  //                     Row(
+  //                       children: [
+  //                         TextButton(
+  //                             onPressed: () {},
+  //                             style: ButtonStyle(
+  //                               overlayColor:
+  //                                   MaterialStateProperty.resolveWith<Color>(
+  //                                 (Set<MaterialState> states) {
+  //                                   if (states
+  //                                       .contains(MaterialState.hovered)) {
+  //                                     return Colors
+  //                                         .transparent; // Return transparent color for hovered state
+  //                                   }
+  //                                   return Colors.green
+  //                                       .shade200; // Use default overlay color for other states
+  //                                 },
+  //                               ),
+  //                             ),
+  //                             child: const Icon(
+  //                               Icons.edit,
+  //                               size: 20,
+  //                               color: Colors.white,
+  //                             )),
+  //                         const SizedBox(
+  //                           width: 2,
+  //                         ),
+  //                         TextButton(
+  //                             onPressed: () {},
+  //                             style: ButtonStyle(
+  //                               overlayColor:
+  //                                   MaterialStateProperty.resolveWith<Color>(
+  //                                 (Set<MaterialState> states) {
+  //                                   if (states
+  //                                       .contains(MaterialState.hovered)) {
+  //                                     return Colors
+  //                                         .transparent; // Return transparent color for hovered state
+  //                                   }
+  //                                   return Colors.grey
+  //                                       .shade900; // Use default overlay color for other states
+  //                                 },
+  //                               ),
+  //                             ),
+  //                             child: const Icon(
+  //                               Icons.delete,
+  //                               size: 20,
+  //                               color: Colors.white,
+  //                             )),
+  //                       ],
+  //                     )
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 }

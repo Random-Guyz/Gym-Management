@@ -97,12 +97,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       showMessage(context, "Something went wrong with Firebase");
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(
-      //     content: Text('Something went wrong with Firebase'),
-      //     duration: Duration(seconds: 2),
-      //   ),
-      // );
     }
   }
 
