@@ -28,7 +28,7 @@ class _CreateAccountState extends State<CreateAccount> {
   String? _name;
   String? _phone;
   String? _email;
-  String? _gym_name;
+  String? _gymName;
   String? _password;
 
   Future<void> storeData() async {
@@ -40,7 +40,7 @@ class _CreateAccountState extends State<CreateAccount> {
           'name': _name,
           'phone': _phone,
           'email': _email,
-          'gym_name': _gym_name,
+          'gym_name': _gymName,
           'pass': _password,
         });
         break;
@@ -51,7 +51,7 @@ class _CreateAccountState extends State<CreateAccount> {
           'name': _name,
           'phone': _phone,
           'email': _email,
-          'gym_name': _gym_name,
+          'gym_name': _gymName,
           'pass': _password,
         });
         break;
@@ -62,7 +62,7 @@ class _CreateAccountState extends State<CreateAccount> {
           'name': _name,
           'phone': _phone,
           'email': _email,
-          'gym_name': _gym_name,
+          'gym_name': _gymName,
           'pass': _password,
         });
         break;
@@ -336,7 +336,7 @@ class _CreateAccountState extends State<CreateAccount> {
             },
             onSaved: (value) {
               setState(() {
-                _gym_name = value!;
+                _gymName = value!;
               });
             },
           ),
@@ -442,7 +442,16 @@ class _CreateAccountState extends State<CreateAccount> {
                       try {
                         await _checkUsers();
                       } catch (e) {
-                        print("Something Went Wrong!");
+                        // Fluttertoast.showToast(
+                        //     msg: "Something Went Wrong!",
+                        //     toastLength: Toast.LENGTH_SHORT,
+                        //     gravity: ToastGravity.CENTER,
+                        //     timeInSecForIosWeb: 1,
+                        //     backgroundColor: Colors.red,
+                        //     textColor: Colors.white,
+                        //     fontSize: 16.0
+                        // );
+                        showMessage(context, "Something Went Wrong!");
                       }
                     }
                   },
