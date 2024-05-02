@@ -1,9 +1,14 @@
+import 'dart:core';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_management_2/screens/login_form.dart';
 import 'package:gym_management_2/utils/show_message.dart';
 import 'package:gym_management_2/widgets/action.dart';
 import 'package:gym_management_2/widgets/box.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Member {
   final String name;
@@ -62,6 +67,27 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
 
   String _fetchedName = "";
   String _fetchedEmail = "";
+  String _fetchedImage = "";
+
+  bool _isLoading = false;
+  String imageUrl = "";
+
+  Future<void> storeData() async {
+    FirebaseFirestore fireStore = FirebaseFirestore.instance;
+    CollectionReference collection = fireStore.collection('gym_owners');
+
+    QuerySnapshot snapshot =
+        await collection.where("email", isEqualTo: _fetchedEmail).get();
+
+    // Check if the document exists
+    if (snapshot.docs.isNotEmpty) {
+      // Update the existing document
+      await snapshot.docs.first.reference.update({'image': imageUrl});
+    } else {
+      // Add a new document
+      await collection.add({'email': _fetchedEmail, 'image': imageUrl});
+    }
+  }
 
   Future<void> _fetchUser() async {
     try {
@@ -81,12 +107,14 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
           if (data is Map) {
             _fetchedName = data['name'];
             _fetchedEmail = data['email'];
+            _fetchedImage = data['image'];
           }
         });
       } else {
         setState(() {
           _fetchedName = "User not found";
-          _fetchedName = "Email not found";
+          _fetchedEmail = "Email not found";
+          _fetchedImage = "Image Not Found";
         });
       }
     } catch (e) {
@@ -190,7 +218,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
         ),
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.fitness_center), label: "Dashboard"),
+              icon: Icon(Icons.dashboard), label: "Dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Members"),
           BottomNavigationBarItem(
               icon: Icon(Icons.sports_mma), label: "Trainers"),
@@ -230,9 +258,53 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const CircleAvatar(
-                              backgroundColor: Colors.lightGreenAccent,
-                              radius: 35,
+                            GestureDetector(
+                              onTap: () async {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                // Request storage permission for gallery access
+                                ImagePicker picker = ImagePicker();
+                                XFile? file = await picker.pickImage(
+                                    source: ImageSource.gallery);
+
+                                String uniqueFileName = DateTime.now()
+                                    .millisecondsSinceEpoch
+                                    .toString();
+
+                                Reference referenceRoot =
+                                    FirebaseStorage.instance.ref();
+                                Reference referenceDirImages =
+                                    referenceRoot.child('images');
+
+                                Reference referenceImageToUpload =
+                                    referenceDirImages.child(uniqueFileName);
+
+                                // store the file
+                                try {
+                                  await referenceImageToUpload
+                                      .putFile(File(file!.path));
+                                  imageUrl = await referenceImageToUpload
+                                      .getDownloadURL();
+                                  await storeData();
+                                } catch (e) {
+                                  showMessage("Error Getting Image");
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                }
+                                setState(() {
+                                  _isLoading = false;
+                                }
+                                );
+                              },
+                              child: _isLoading
+                                  ? CircularProgressIndicator()
+                                  : CircleAvatar(
+                                      backgroundColor: Colors.grey.shade900,
+                                      backgroundImage: NetworkImage(imageUrl),
+                                      radius: 35,
+                                    ),
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
@@ -327,64 +399,76 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
               }
             },
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
-            child: MyAction(
-              title: "Take Attendance",
-              myIcon: Icon(
-                Icons.flip,
-                size: 20,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                showMessage(context, "Attendance");
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
-            child: MyAction(
-              title: "Add Member",
-              myIcon: Icon(
-                Icons.person,
-                size: 20,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                showMessage(context, "Member Added");
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
-            child: MyAction(
-                title: "Add Trainer",
-                myIcon: Icon(
-                  Icons.sports_mma,
-                  size: 20,
-                  color: Colors.white,
+          SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                  child: MyAction(
+                    title: "Take Attendance",
+                    myIcon: const Icon(
+                      Icons.flip,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      showMessage("Attendance");
+                    },
+                  ),
                 ),
-                onPressed: () {
-                  showMessage(context, "Trainer Added");
-                }),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
-            child: MyAction(
-              title: "Log Out",
-              myIcon: Icon(
-                Icons.logout,
-                size: 20,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              },
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                  child: MyAction(
+                    title: "Add Member",
+                    myIcon: const Icon(
+                      Icons.person,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      showMessage("Member Added");
+                    },
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                  child: MyAction(
+                      title: "Add Trainer",
+                      myIcon: const Icon(
+                        Icons.sports_mma,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        showMessage("Trainer Added");
+                      }),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                  child: MyAction(
+                    title: "Log Out",
+                    myIcon: const Icon(
+                      Icons.logout,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
+                      );
+                    },
+                  ),
+                )
+              ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -452,10 +536,10 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                             children: [
                               // User Image
                               const CircleAvatar(
-                                backgroundColor: Colors.lightGreenAccent,
+                                backgroundColor: Colors.grey,
+                                backgroundImage:
+                                    AssetImage("assets/default.png"),
                                 radius: 23,
-                                backgroundImage: NetworkImage(
-                                    'https://picsum.photos/250?image=9'),
                               ),
                               const SizedBox(width: 30),
                               // User details
@@ -543,10 +627,9 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                           children: [
                             // User Image
                             const CircleAvatar(
-                              backgroundColor: Colors.lightGreenAccent,
                               radius: 23,
-                              backgroundImage: NetworkImage(
-                                  'https://picsum.photos/250?image=9'),
+                              backgroundColor: Colors.grey,
+                              backgroundImage: AssetImage("assets/default.png"),
                             ),
                             const SizedBox(width: 30),
                             // User details

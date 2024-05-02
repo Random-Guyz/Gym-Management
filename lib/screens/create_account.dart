@@ -100,7 +100,7 @@ class _CreateAccountState extends State<CreateAccount> {
 
       // Check if any query returned a non-empty result
       if (querySnapshots.any((snapshot) => snapshot.docs.isNotEmpty)) {
-        showMessage(context, "User Already Exists!");
+        showMessage("User Already Exists!");
       } else {
         await storeData();
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -112,7 +112,7 @@ class _CreateAccountState extends State<CreateAccount> {
             MaterialPageRoute(builder: (context) => const LoginScreen()));
       }
     } catch (e) {
-      showMessage(context, "Something went wrong with Firebase");
+      showMessage("Something went wrong with Firebase");
     }
   }
 
@@ -442,16 +442,7 @@ class _CreateAccountState extends State<CreateAccount> {
                       try {
                         await _checkUsers();
                       } catch (e) {
-                        // Fluttertoast.showToast(
-                        //     msg: "Something Went Wrong!",
-                        //     toastLength: Toast.LENGTH_SHORT,
-                        //     gravity: ToastGravity.CENTER,
-                        //     timeInSecForIosWeb: 1,
-                        //     backgroundColor: Colors.red,
-                        //     textColor: Colors.white,
-                        //     fontSize: 16.0
-                        // );
-                        showMessage(context, "Something Went Wrong!");
+                     showMessage("Something Went Wrong!");
                       }
                     }
                   },

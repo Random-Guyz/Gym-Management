@@ -41,6 +41,11 @@ dependencies:
   url_launcher: ^6.0.13
   youtube_player_flutter: ^9.0.1
   fluttertoast: ^8.2.5
+  image_picker: ^1.1.1
+  firebase_storage: ^11.7.4
+  file_picker: ^8.0.3
+  permission_handler: ^11.3.1
+  shared_preferences: ^2.2.3
 
 #  exercises: any
 dev_dependencies:
@@ -69,6 +74,7 @@ flutter:
   assets:
     #muscles
     - assets/logo.png
+    - assets/default.png
     - assets/muscles/
     - assets/exercises/Chest/
     - assets/exercises/Back/

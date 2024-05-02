@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Check if any query returned a non-empty result
       if (querySnapshots.any((snapshot) => snapshot.docs.isNotEmpty)) {
-        showMessage(context, "Login Successful!");
+        showMessage("Login Successful!");
 
         // Determine the account type based on the index of the non-empty query
         int accountTypeIndex =
@@ -93,10 +93,16 @@ class _LoginScreenState extends State<LoginScreen> {
             break;
         }
       } else {
-        showMessage(context, "User not found");
+        showMessage("User not found");
       }
     } catch (e) {
-      showMessage(context, "Something went wrong with Firebase");
+      showMessage("Something went wrong with Firebase");
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text('Something went wrong with Firebase'),
+      //     duration: Duration(seconds: 2),
+      //   ),
+      // );
     }
   }
 

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-void showMessage(BuildContext context, String msg) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(msg), // This was causing the error
-    duration: const Duration(seconds: 1),
-  ));
+void showMessage(String message) {
+   Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 1,
+    backgroundColor: Colors.lightGreenAccent,
+    textColor: Colors.black,
+    fontSize: 16.0,
+  );
 }

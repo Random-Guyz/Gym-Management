@@ -14,7 +14,7 @@ class _DashboardBoxState extends State<DashboardBox> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       height: 100,
       width: 100,
       decoration: BoxDecoration(
@@ -27,7 +27,7 @@ class _DashboardBoxState extends State<DashboardBox> {
             alignment: Alignment.center,
             child: Text(
               widget.count.toString(),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -40,7 +40,7 @@ class _DashboardBoxState extends State<DashboardBox> {
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Text(
                 widget.title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   color: Colors.white,
                 ),
