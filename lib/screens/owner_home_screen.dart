@@ -295,14 +295,14 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                                 }
                                 setState(() {
                                   _isLoading = false;
-                                }
-                                );
+                                });
                               },
                               child: _isLoading
                                   ? CircularProgressIndicator()
                                   : CircleAvatar(
                                       backgroundColor: Colors.grey.shade900,
-                                      backgroundImage: NetworkImage(imageUrl),
+                                      backgroundImage:
+                                          NetworkImage(_fetchedImage),
                                       radius: 35,
                                     ),
                             ),
