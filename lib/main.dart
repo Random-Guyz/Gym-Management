@@ -32,7 +32,11 @@ class MyApp extends StatelessWidget {
       home: const OwnerHomeScreen(
         emailId: 'admin@gmail.com',
         pass: 'admin',
-      ), // Use LoginForm here
+      ),
+      // home: const MemberHomeScreen(
+      //   emailId: 'nick@gmail.com',
+      //   pass: 'nick',
+      // ), // Use LoginForm here
     );
   }
 }

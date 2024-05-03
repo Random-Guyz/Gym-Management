@@ -42,6 +42,7 @@ class _CreateAccountState extends State<CreateAccount> {
           'email': _email,
           'gym_name': _gymName,
           'pass': _password,
+          'attend': false,
         });
         break;
       case "trainer":
@@ -53,6 +54,8 @@ class _CreateAccountState extends State<CreateAccount> {
           'email': _email,
           'gym_name': _gymName,
           'pass': _password,
+          'attend': false,
+          'assigned': "",
         });
         break;
       case "member":
@@ -64,6 +67,8 @@ class _CreateAccountState extends State<CreateAccount> {
           'email': _email,
           'gym_name': _gymName,
           'pass': _password,
+          'attend': false,
+          'assigned': "",
         });
         break;
       default:

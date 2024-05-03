@@ -4,14 +4,15 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_management_2/screens/add_member.dart';
-import 'package:gym_management_2/screens/login_form.dart';
+import 'package:gym_management_2/screens/assign_trainer.dart';
 import 'package:gym_management_2/utils/show_message.dart';
-import 'package:gym_management_2/widgets/action.dart';
 import 'package:gym_management_2/widgets/box.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../widgets/action.dart';
+import 'add_member.dart';
 import 'add_trainer.dart';
+import 'login_form.dart';
 
 class Member {
   final String name;
@@ -129,6 +130,40 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     }
   }
 
+  Future<List<Trainer>> _fetchTrainers() async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final gymOwnerDoc = await firestore
+          .collection('gym_owners')
+          .where('email', isEqualTo: widget.emailId)
+          .get()
+          .then((querySnapshot) => querySnapshot.docs.first);
+
+      // Extract the gym name from the gym owner document
+      final gymName = gymOwnerDoc.get('gym_name');
+
+      if (gymName == null) {
+        // Handle case where gym name is missing in gym owner document
+        return [];
+      }
+
+      // future or Future-based query to fetch members with matching gym name
+      final trainersFuture = firestore
+          .collection('trainers')
+          .where('gym_name', isEqualTo: gymName)
+          .snapshots();
+
+      final trainerList = await trainersFuture.first.then((snapshot) =>
+          snapshot.docs.map((doc) => Trainer.fromMap(doc.data())).toList());
+
+      return trainerList;
+    } catch (e) {
+      print(e); // Log the error for debugging
+      return [];
+    }
+  }
+
   Future<List<Member>> _fetchMembers() async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -158,40 +193,6 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
           snapshot.docs.map((doc) => Member.fromMap(doc.data())).toList());
 
       return memberList;
-    } catch (e) {
-      print(e); // Log the error for debugging
-      return [];
-    }
-  }
-
-  Future<List<Trainer>> _fetchTrainers() async {
-    try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      final gymOwnerDoc = await firestore
-          .collection('gym_owners')
-          .where('email', isEqualTo: widget.emailId)
-          .get()
-          .then((querySnapshot) => querySnapshot.docs.first);
-
-      // Extract the gym name from the gym owner document
-      final gymName = gymOwnerDoc.get('gym_name');
-
-      if (gymName == null) {
-        // Handle case where gym name is missing in gym owner document
-        return [];
-      }
-
-      // future or Future-based query to fetch members with matching gym name
-      final trainersFuture = firestore
-          .collection('trainers')
-          .where('gym_name', isEqualTo: gymName)
-          .snapshots();
-
-      final trainerList = await trainersFuture.first.then((snapshot) =>
-          snapshot.docs.map((doc) => Trainer.fromMap(doc.data())).toList());
-
-      return trainerList;
     } catch (e) {
       print(e); // Log the error for debugging
       return [];
@@ -340,10 +341,17 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     );
   }
 
+  Future<bool> checkMembersExist() async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final querySnapshot = await firestore.collection('members').get();
+    return querySnapshot.docs.isNotEmpty;
+  }
+
   Widget displayDashboard() {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dashboard"),
+        surfaceTintColor: Colors.transparent,
       ),
       body: Column(
         children: [
@@ -360,8 +368,6 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                 return Text('Error: ${memberSnapshot.error}');
               } else {
                 final memberCount = memberSnapshot.data?.length ?? 0;
-
-                // return FutureBuilder<List<Trainer>>(future: _fetchTrainers(), builder: builder)
 
                 return FutureBuilder<List<Trainer>>(
                   future: _fetchTrainers(),
@@ -401,83 +407,110 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
               }
             },
           ),
-          SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
-                  child: MyAction(
-                    title: "Take Attendance",
-                    myIcon: const Icon(
-                      Icons.flip,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      showMessage("Attendance");
-                    },
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
-                  child: MyAction(
-                    title: "Add Member",
-                    myIcon: const Icon(
-                      Icons.person,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                AddMember(gymName: _fetchedGymName)),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
-                  child: MyAction(
-                      title: "Add Trainer",
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    child: MyAction(
+                      title: "Take Attendance",
                       myIcon: const Icon(
-                        Icons.sports_mma,
-                        size: 20,
+                        Icons.flip,
+                        size: 17,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        showMessage("Attendance");
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    child: MyAction(
+                      title: "Assign Trainer",
+                      myIcon: const Icon(
+                        Icons.done,
+                        size: 17,
                         color: Colors.white,
                       ),
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    AddTrainer(gymName: _fetchedGymName)));
-                      }),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
-                  child: MyAction(
-                    title: "Log Out",
-                    myIcon: const Icon(
-                      Icons.logout,
-                      size: 20,
-                      color: Colors.white,
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>  AssignTrainer(gymName: _fetchedGymName)),
+                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) =>
+                        //           AddMember(gymName: _fetchedGymName)),
+                        // );
+                      },
                     ),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginScreen()),
-                      );
-                    },
                   ),
-                )
-              ],
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    child: MyAction(
+                      title: "Add Member",
+                      myIcon: const Icon(
+                        Icons.person,
+                        size: 17,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  AddMember(gymName: _fetchedGymName)),
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    child: MyAction(
+                        title: "Add Trainer",
+                        myIcon: const Icon(
+                          Icons.sports_mma,
+                          size: 17,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AddTrainer(gymName: _fetchedGymName)));
+                        }),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    child: MyAction(
+                      title: "Log Out",
+                      myIcon: const Icon(
+                        Icons.logout,
+                        size: 17,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
+                        );
+                      },
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ],
@@ -505,17 +538,12 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     );
   }
 
-  Future<bool> checkMembersExist() async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final querySnapshot = await firestore.collection('members').get();
-    return querySnapshot.docs.isNotEmpty;
-  }
-
   Widget getTrainersList() {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Trainers'),
-          backgroundColor: Colors.transparent, // Set the app bar title
+          surfaceTintColor: Colors.transparent,
+          // Set the app bar title
         ),
         body: FutureBuilder(
           future: _fetchTrainers(),
@@ -683,7 +711,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Members'),
-        backgroundColor: Colors.transparent, // Set the app bar title
+        surfaceTintColor: Colors.transparent,
       ),
       body: FutureBuilder(
         future: _fetchMembers(),

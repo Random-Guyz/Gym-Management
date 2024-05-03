@@ -279,6 +279,4 @@ class _getUserDetailsState extends State<getUserDetails> {
       ),
     );
   }
-
-
 }
