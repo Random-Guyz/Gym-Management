@@ -103,11 +103,7 @@ class _CreateAccountState extends State<CreateAccount> {
         showMessage("User Already Exists!");
       } else {
         await storeData();
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Account Created'),
-          duration: Duration(seconds: 1),
-        ));
-
+        showMessage("Account Created");
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const LoginScreen()));
       }
@@ -217,12 +213,12 @@ class _CreateAccountState extends State<CreateAccount> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pop(context); // Close dialog first
+                      // Navigator.pop(context);
+
                       Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginScreen()),
-                      );
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()));
                     },
                     child: const Text(
                       'Login',
@@ -442,7 +438,7 @@ class _CreateAccountState extends State<CreateAccount> {
                       try {
                         await _checkUsers();
                       } catch (e) {
-                     showMessage("Something Went Wrong!");
+                        showMessage("Something Went Wrong!");
                       }
                     }
                   },

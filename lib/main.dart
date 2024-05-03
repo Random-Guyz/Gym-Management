@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_management_2/firebase_options.dart';
-import 'package:gym_management_2/screens/splash.dart';
+import 'package:gym_management_2/screens/owner_home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,11 +28,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Gym Management',
       theme: darkTheme,
-      home: SplashScreen(),
-      // home: const OwnerHomeScreen(
-      //   emailId: 'admin@gmail.com',
-      //   pass: 'admin',
-      // ), // Use LoginForm here
+      // home: SplashScreen(),
+      home: const OwnerHomeScreen(
+        emailId: 'admin@gmail.com',
+        pass: 'admin',
+      ), // Use LoginForm here
     );
   }
 }

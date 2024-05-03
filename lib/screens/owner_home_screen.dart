@@ -4,11 +4,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_management_2/screens/add_member.dart';
 import 'package:gym_management_2/screens/login_form.dart';
 import 'package:gym_management_2/utils/show_message.dart';
 import 'package:gym_management_2/widgets/action.dart';
 import 'package:gym_management_2/widgets/box.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'add_trainer.dart';
 
 class Member {
   final String name;
@@ -52,22 +55,24 @@ class OwnerHomeScreen extends StatefulWidget {
 }
 
 class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
+  int myIndex = 0;
+  late List<Widget> content;
+
   @override
   void initState() {
     super.initState();
     _fetchUser();
+    content = [
+      displayDashboard(),
+      getMembersList(),
+      getTrainersList(),
+    ];
   }
-
-  int myIndex = 0;
-  late List<Widget> content = [
-    displayDashboard(),
-    getMembersList(),
-    getTrainersList()
-  ];
 
   String _fetchedName = "";
   String _fetchedEmail = "";
   String _fetchedImage = "";
+  String _fetchedGymName = "";
 
   bool _isLoading = false;
   String imageUrl = "";
@@ -108,22 +113,19 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
             _fetchedName = data['name'];
             _fetchedEmail = data['email'];
             _fetchedImage = data['image'];
+            _fetchedGymName = data['gym_name'];
           }
         });
       } else {
         setState(() {
           _fetchedName = "User not found";
           _fetchedEmail = "Email not found";
-          _fetchedImage = "Image Not Found";
+          _fetchedImage = "Image not found";
+          _fetchedGymName = 'Gym Name not found';
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Something went wrong with Firebase'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      showMessage("Something went wrong with Firebase");
     }
   }
 
@@ -145,14 +147,14 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
         return [];
       }
 
-      // Stream or Future-based query to fetch members with matching gym name
-      final membersStream = firestore
+      // future or Future-based query to fetch members with matching gym name
+      final membersfuture = firestore
           .collection('members')
           .where('gym_name', isEqualTo: gymName)
           .snapshots(); // For real-time updates
 
-      // Convert stream to a list if needed (for one-time fetching)
-      final memberList = await membersStream.first.then((snapshot) =>
+      // Convert future to a list if needed (for one-time fetching)
+      final memberList = await membersfuture.first.then((snapshot) =>
           snapshot.docs.map((doc) => Member.fromMap(doc.data())).toList());
 
       return memberList;
@@ -180,14 +182,13 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
         return [];
       }
 
-      // Stream or Future-based query to fetch members with matching gym name
-      final trainersStream = firestore
+      // future or Future-based query to fetch members with matching gym name
+      final trainersFuture = firestore
           .collection('trainers')
           .where('gym_name', isEqualTo: gymName)
-          .snapshots(); // For real-time updates
+          .snapshots();
 
-      // Convert stream to a list if needed (for one-time fetching)
-      final trainerList = await trainersStream.first.then((snapshot) =>
+      final trainerList = await trainersFuture.first.then((snapshot) =>
           snapshot.docs.map((doc) => Trainer.fromMap(doc.data())).toList());
 
       return trainerList;
@@ -287,18 +288,18 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                                   imageUrl = await referenceImageToUpload
                                       .getDownloadURL();
                                   await storeData();
-                                } catch (e) {
-                                  showMessage("Error Getting Image");
                                   setState(() {
                                     _isLoading = false;
                                   });
+                                } catch (e) {
+                                  showMessage("Error Getting Image");
                                 }
                                 setState(() {
                                   _isLoading = false;
                                 });
                               },
                               child: _isLoading
-                                  ? CircularProgressIndicator()
+                                  ? const CircularProgressIndicator()
                                   : CircleAvatar(
                                       backgroundColor: Colors.grey.shade900,
                                       backgroundImage:
@@ -360,9 +361,10 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
               } else {
                 final memberCount = memberSnapshot.data?.length ?? 0;
 
+                // return FutureBuilder<List<Trainer>>(future: _fetchTrainers(), builder: builder)
+
                 return FutureBuilder<List<Trainer>>(
-                  // Use FutureBuilder<int> for trainer count
-                  future: _fetchTrainers(), // Replace with your implementation
+                  future: _fetchTrainers(),
                   builder:
                       (context, AsyncSnapshot<List<Trainer>> trainerSnapshot) {
                     if (trainerSnapshot.hasError) {
@@ -429,7 +431,12 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      showMessage("Member Added");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                AddMember(gymName: _fetchedGymName)),
+                      );
                     },
                   ),
                 ),
@@ -444,7 +451,11 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        showMessage("Trainer Added");
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AddTrainer(gymName: _fetchedGymName)));
                       }),
                 ),
                 Padding(
@@ -503,7 +514,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
   Widget getTrainersList() {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Trainers'), // Set the app bar title
+          title: const Text('Trainers'),
+          backgroundColor: Colors.transparent, // Set the app bar title
         ),
         body: FutureBuilder(
           future: _fetchTrainers(),
@@ -554,7 +566,82 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                               Row(
                                 children: [
                                   TextButton(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              surfaceTintColor:
+                                                  Colors.grey[850],
+                                              title:
+                                                  const Text('Confirm Delete'),
+                                              content: const Text(
+                                                  'Are you sure you want to delete this trainer?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: const Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                        color: Colors
+                                                            .lightGreenAccent),
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    try {
+                                                      final FirebaseFirestore
+                                                          firestore =
+                                                          FirebaseFirestore
+                                                              .instance;
+                                                      final collection =
+                                                          firestore.collection(
+                                                              'trainers');
+
+                                                      // Query for the document with the matching email
+                                                      final querySnapshot =
+                                                          await collection
+                                                              .where('email',
+                                                                  isEqualTo:
+                                                                      trainerData
+                                                                          ?.email)
+                                                              .get();
+
+                                                      // Check if there is a matching document
+                                                      if (querySnapshot
+                                                          .docs.isNotEmpty) {
+                                                        // Delete the first document found (assuming emails are unique)
+                                                        await querySnapshot.docs
+                                                            .first.reference
+                                                            .delete();
+                                                        // Show success message
+                                                        showMessage(
+                                                            "Trainer Deleted Successfully!");
+                                                      } else {
+                                                        // Show error message if no matching document found
+                                                        showMessage(
+                                                            "Trainer Not Found!");
+                                                      }
+                                                    } catch (e) {
+                                                      // Show error message
+                                                      showMessage(
+                                                          "Error Deleting Trainer!");
+                                                    }
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                        color: Colors
+                                                            .lightGreenAccent),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
                                       style: ButtonStyle(
                                         overlayColor: MaterialStateProperty
                                             .resolveWith<Color>(
@@ -570,7 +657,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                                         ),
                                       ),
                                       child: const Icon(
-                                        Icons.info,
+                                        Icons.delete_forever,
                                         size: 20,
                                         color: Colors.white,
                                       )),
@@ -595,7 +682,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
   Widget getMembersList() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Members'), // Set the app bar title
+        title: const Text('Members'),
+        backgroundColor: Colors.transparent, // Set the app bar title
       ),
       body: FutureBuilder(
         future: _fetchMembers(),
@@ -609,73 +697,154 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
             if (members.isEmpty) {
               return const Center(child: Text('No members in your gym'));
             } else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  var memberData = snapshot.data?[index];
-                  // Outside padding
-                  return Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey.shade900),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Row(
-                          children: [
-                            // User Image
-                            const CircleAvatar(
-                              radius: 23,
-                              backgroundColor: Colors.grey,
-                              backgroundImage: AssetImage("assets/default.png"),
-                            ),
-                            const SizedBox(width: 30),
-                            // User details
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(memberData?.name ?? "Name"),
-                                Text(memberData?.email ?? "Email"),
-                              ],
-                            ),
-                            // const Spacer(),
-                            // Row(
-                            //   children: [
-                            //     TextButton(
-                            //         onPressed: () {},
-                            //         style: ButtonStyle(
-                            //           overlayColor: MaterialStateProperty
-                            //               .resolveWith<Color>(
-                            //             (Set<MaterialState> states) {
-                            //               if (states.contains(
-                            //                   MaterialState.hovered)) {
-                            //                 return Colors
-                            //                     .transparent; // Return transparent color for hovered state
-                            //               }
-                            //               return Colors.green
-                            //                   .shade200; // Use default overlay color for other states
-                            //             },
-                            //           ),
-                            //         ),
-                            //         child: const Icon(
-                            //           Icons.info,
-                            //           size: 20,
-                            //           color: Colors.white,
-                            //         )
-                            //     ),
-                            //     const SizedBox(
-                            //       width: 1,
-                            //     ),
-                            //   ],
-                            // )
-                          ],
+              return RefreshIndicator(
+                color: Colors.lightGreenAccent,
+                backgroundColor: Colors.black,
+                onRefresh: _fetchMembers,
+                child: ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    var memberData = snapshot.data?[index];
+                    // String currentMember = snapshot.data![index].name;
+                    // Outside padding
+                    return Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade900),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              // User Image
+                              const CircleAvatar(
+                                radius: 23,
+                                backgroundColor: Colors.grey,
+                                backgroundImage:
+                                    AssetImage("assets/default.png"),
+                              ),
+                              const SizedBox(width: 30),
+                              // User details
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(memberData?.name ?? "Name"),
+                                  Text(memberData?.email ?? "Email"),
+                                ],
+                              ),
+                              const Spacer(),
+                              Row(
+                                children: [
+                                  TextButton(
+                                      onPressed: () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              surfaceTintColor:
+                                                  Colors.grey[850],
+                                              title:
+                                                  const Text('Confirm Delete'),
+                                              content: const Text(
+                                                  'Are you sure you want to delete this member?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: const Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                        color: Colors
+                                                            .lightGreenAccent),
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    try {
+                                                      final FirebaseFirestore
+                                                          firestore =
+                                                          FirebaseFirestore
+                                                              .instance;
+                                                      final collection =
+                                                          firestore.collection(
+                                                              'members');
+
+                                                      // Query for the document with the matching email
+                                                      final querySnapshot =
+                                                          await collection
+                                                              .where('email',
+                                                                  isEqualTo:
+                                                                      memberData
+                                                                          ?.email)
+                                                              .get();
+
+                                                      // Check if there is a matching document
+                                                      if (querySnapshot
+                                                          .docs.isNotEmpty) {
+                                                        // Delete the first document found (assuming emails are unique)
+                                                        await querySnapshot.docs
+                                                            .first.reference
+                                                            .delete();
+                                                        // Show success message
+                                                        showMessage(
+                                                            "Member Deleted Successfully!");
+                                                      } else {
+                                                        // Show error message if no matching document found
+                                                        showMessage(
+                                                            "Member not found!");
+                                                      }
+                                                    } catch (e) {
+                                                      // Show error message
+                                                      showMessage(
+                                                          "Error deleting member");
+                                                    }
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                        color: Colors
+                                                            .lightGreenAccent),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      style: ButtonStyle(
+                                        overlayColor: MaterialStateProperty
+                                            .resolveWith<Color>(
+                                          (Set<MaterialState> states) {
+                                            if (states.contains(
+                                                MaterialState.hovered)) {
+                                              return Colors
+                                                  .transparent; // Return transparent color for hovered state
+                                            }
+                                            return Colors.red
+                                                .shade200; // Use default overlay color for other states
+                                          },
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.delete_forever,
+                                        size: 20,
+                                        color: Colors.white,
+                                      )),
+                                  const SizedBox(
+                                    width: 1,
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             }
           }
