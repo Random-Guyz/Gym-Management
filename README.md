@@ -43,5 +43,8 @@ By installing this app from a source other than the official app store, you ackn
 ![list_member](https://github.com/Random-Guyz/Gym-Management/assets/93507427/ce004522-1643-4d4d-bcc2-24fdc98c17f6)
 
 
+# Team Member
 
-
+ - Kaif Imran Shariff - Backend
+ - Shaikh Moinuddin - Frontend & Leader
+ - Vinit Eknath Sawant - Contributer

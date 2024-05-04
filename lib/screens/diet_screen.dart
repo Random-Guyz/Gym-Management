@@ -9,13 +9,14 @@ import '../diets/weightlossdietscreen.dart';
 import 'muscle_tile.dart';
 
 class DietScreen extends StatelessWidget {
-  const DietScreen({super.key});
+  const DietScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Diets'),
+        surfaceTintColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -62,7 +63,7 @@ class DietScreen extends StatelessWidget {
             ),
             MuscleTile(
               muscleName: 'Low Carb Diet',
-              imagePath: 'assets/diets/lowcarb.jpg',
+              imagePath: 'assets/diets/lowcarb.webp',
               onTap: () {
                 Navigator.push(
                   context,
@@ -76,7 +77,7 @@ class DietScreen extends StatelessWidget {
             ),
             MuscleTile(
               muscleName: 'Muscle Gain Diet',
-              imagePath: 'assets/diets/musclegain.webp',
+              imagePath: 'assets/diets/musclegain.jpg',
               onTap: () {
                 Navigator.push(
                   context,

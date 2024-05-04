@@ -17,11 +17,8 @@ import 'login_form.dart';
 class Member {
   final String name;
   final String email;
-  // Add other member properties as needed
 
   Member({required this.name, required this.email});
-
-  // Add a factory constructor (optional) to create a Member from a Map
 
   factory Member.fromMap(Map<String, dynamic> data) => Member(
         name: data['name'],
@@ -32,11 +29,8 @@ class Member {
 class Trainer {
   final String name;
   final String email;
-  // Add other member properties as needed
 
   Trainer({required this.name, required this.email});
-
-  // Add a factory constructor (optional) to create a Member from a Map
 
   factory Trainer.fromMap(Map<String, dynamic> data) => Trainer(
         name: data['name'],
@@ -48,7 +42,6 @@ class OwnerHomeScreen extends StatefulWidget {
   final String? emailId;
   final String? pass;
 
-  // const OwnerHomeScreen({super.key}); // Normal Constructor
   const OwnerHomeScreen({super.key, required this.emailId, required this.pass});
 
   @override
@@ -85,12 +78,9 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     QuerySnapshot snapshot =
         await collection.where("email", isEqualTo: _fetchedEmail).get();
 
-    // Check if the document exists
     if (snapshot.docs.isNotEmpty) {
-      // Update the existing document
       await snapshot.docs.first.reference.update({'image': imageUrl});
     } else {
-      // Add a new document
       await collection.add({'email': _fetchedEmail, 'image': imageUrl});
     }
   }
@@ -99,7 +89,6 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      // Collection references for each collection
       CollectionReference members = firestore.collection('gym_owners');
 
       final querySnapshot = await members
@@ -140,15 +129,12 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
           .get()
           .then((querySnapshot) => querySnapshot.docs.first);
 
-      // Extract the gym name from the gym owner document
       final gymName = gymOwnerDoc.get('gym_name');
 
       if (gymName == null) {
-        // Handle case where gym name is missing in gym owner document
         return [];
       }
 
-      // future or Future-based query to fetch members with matching gym name
       final trainersFuture = firestore
           .collection('trainers')
           .where('gym_name', isEqualTo: gymName)
@@ -174,21 +160,17 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
           .get()
           .then((querySnapshot) => querySnapshot.docs.first);
 
-      // Extract the gym name from the gym owner document
       final gymName = gymOwnerDoc.get('gym_name');
 
       if (gymName == null) {
-        // Handle case where gym name is missing in gym owner document
         return [];
       }
 
-      // future or Future-based query to fetch members with matching gym name
       final membersfuture = firestore
           .collection('members')
           .where('gym_name', isEqualTo: gymName)
           .snapshots(); // For real-time updates
 
-      // Convert future to a list if needed (for one-time fetching)
       final memberList = await membersfuture.first.then((snapshot) =>
           snapshot.docs.map((doc) => Member.fromMap(doc.data())).toList());
 
@@ -412,21 +394,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 5, horizontal: 32.0),
-                    child: MyAction(
-                      title: "Take Attendance",
-                      myIcon: const Icon(
-                        Icons.flip,
-                        size: 17,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        showMessage("Attendance");
-                      },
-                    ),
-                  ),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 5, horizontal: 32.0),

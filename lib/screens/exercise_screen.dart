@@ -24,7 +24,7 @@ class ExerciseScreen extends StatelessWidget {
           children: [
             MuscleTile(
               muscleName: 'Diet',
-              imagePath: 'assets/muscles/chest.jpg',
+              imagePath: 'assets/diets/diet.cms',
               onTap: () {
                 Navigator.push(
                   context,
