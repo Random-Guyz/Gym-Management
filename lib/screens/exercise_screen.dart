@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_management_2/screens/diet_screen.dart';
 import '../muscles_exercises/abs_execise_screen.dart';
 import '../muscles_exercises/back_exercise_screen.dart';
 import '../muscles_exercises/biceps_exercise_screen.dart';
@@ -15,12 +16,24 @@ class ExerciseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Muscles'),
+        title: const Text('Muscles and Diets'),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            MuscleTile(
+              muscleName: 'Diet',
+              imagePath: 'assets/muscles/chest.jpg',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DietScreen(),
+                  ),
+                );
+              },
+            ),
             MuscleTile(
               muscleName: 'Chest',
               imagePath: 'assets/muscles/chest.jpg',
