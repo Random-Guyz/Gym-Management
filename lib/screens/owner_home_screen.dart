@@ -413,8 +413,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 32.0),
                     child: MyAction(
                       title: "Take Attendance",
                       myIcon: const Icon(
@@ -428,8 +428,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 32.0),
                     child: MyAction(
                       title: "Assign Trainer",
                       myIcon: const Icon(
@@ -441,7 +441,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  AssignTrainer(gymName: _fetchedGymName)),
+                              builder: (context) =>
+                                  AssignTrainer(gymName: _fetchedGymName)),
                         );
                         // Navigator.push(
                         //   context,
@@ -453,8 +454,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 32.0),
                     child: MyAction(
                       title: "Add Member",
                       myIcon: const Icon(
@@ -473,8 +474,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 32.0),
                     child: MyAction(
                         title: "Add Trainer",
                         myIcon: const Icon(
@@ -491,8 +492,8 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
                         }),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 32.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 32.0),
                     child: MyAction(
                       title: "Log Out",
                       myIcon: const Icon(

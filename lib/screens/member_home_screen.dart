@@ -80,7 +80,6 @@ class _MemberHomeScreenState extends State<MemberHomeScreen> {
           _fetchedEmail = "Email not found";
           _fetchedImage = "Image not found";
           // _fetchedGym = "No Gym Found";
-
         });
       }
     } catch (e) {
