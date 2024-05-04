@@ -20,16 +20,18 @@ By installing this app from a source other than the official app store, you ackn
 
 ## Login Screen
 
-## Create Account
+# Create Account
 
-# Select your account type
+## Select your account type
 
-# Fill your details
+## Fill your details
 
-# Be Done!
+## Be Done!
 
-## Dashboard
+# Dashboard
 
-# Add trainer/member to your gym
+## Add trainer/member to your gym
 
-# Assign a trainer to member
+## Assign a trainer to member
+
+## Member/trainer's list
