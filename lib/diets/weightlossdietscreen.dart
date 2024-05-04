@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 class WeightLossDiet extends StatelessWidget {
-  const WeightLossDiet({Key? key}) : super(key: key);
+  const WeightLossDiet({super.key});
 
   @override
   Widget build(BuildContext context) {
     // Define the calories for each meal component
-    final breakfastCalories = 300;
-    final morningSnackCalories = 150;
-    final lunchCalories = 400;
-    final eveningSnackCalories = 150;
-    final dinnerCalories = 500;
+    const breakfastCalories = 300;
+    const morningSnackCalories = 150;
+    const lunchCalories = 400;
+    const eveningSnackCalories = 150;
+    const dinnerCalories = 500;
 
     // Calculate the overall total calories
-    final overallTotalCalories = breakfastCalories +
+    const overallTotalCalories = breakfastCalories +
         morningSnackCalories +
         lunchCalories +
         eveningSnackCalories +
@@ -28,9 +28,9 @@ class WeightLossDiet extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Overall Total Calories: $overallTotalCalories kcal',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
