@@ -9,7 +9,7 @@ import '../diets/weightlossdietscreen.dart';
 import 'muscle_tile.dart';
 
 class DietScreen extends StatelessWidget {
-  const DietScreen({Key? key}) : super(key: key);
+  const DietScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
