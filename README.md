@@ -19,6 +19,22 @@ By installing this app from a source other than the official app store, you ackn
 - This repository provides the `.apk` of the app.
 - Click here to download the app -> [Download](https://github.com/Random-Guyz/Gym-Management/blob/master/app.apk)
 
+## Demo Accounts
+
+**Owner**
+- Email: demo@demo.com
+- password: demo
+
+**Member**
+- Email: rocket@gmail.com
+- password: rocket
+
+**Trainer**
+- Email: donald@gmail.com
+- password: donald
+
+**Or create your own account**
+
 ## Login Screen
 ![login](https://github.com/Random-Guyz/Gym-Management/assets/93507427/66e23aca-9ac1-4d54-9a43-54e1eb20613d)
 
