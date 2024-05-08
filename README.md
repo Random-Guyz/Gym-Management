@@ -47,4 +47,3 @@ By installing this app from a source other than the official app store, you ackn
 
  - Kaif Imran Shariff - Backend
  - Shaikh Moinuddin - Frontend & Leader
- - Vinit Eknath Sawant - Contributer
