@@ -1,4 +1,4 @@
-# Gym Management <br /> Made with Flutter [Download](https://github.com/Random-Guyz/Gym-Management/blob/master/app.apk)
+# Gym Management <br /> Made with Flutter 
 
 **Important Installation Notice: Please Read Before Proceeding**
 
@@ -7,6 +7,7 @@
 - If you choose to proceed with the installation, you will need to __allow__ the installation __manually__ in your device settings.
 
 **Disclaimer:**
+
 By installing this app from a source other than the official app store, you acknowledge and accept the following:
 - The app may not undergo the same security checks as those available on the Google Play Store.
 - The developer is __not__ responsible for any __potential risks__ or issues that may arise from installing or using the app.
@@ -15,8 +16,8 @@ By installing this app from a source other than the official app store, you ackn
 *Proceed with caution and at your own risk.*
 
 ## Description
-- This app is made in Android Studio with dart programming language.
 - This repository provides the `.apk` of the app.
+- Click here to download the app -> [Download](https://github.com/Random-Guyz/Gym-Management/blob/master/app.apk)
 
 ## Login Screen
 ![login](https://github.com/Random-Guyz/Gym-Management/assets/93507427/66e23aca-9ac1-4d54-9a43-54e1eb20613d)
@@ -46,4 +47,4 @@ By installing this app from a source other than the official app store, you ackn
 # Team Member
 
  - Kaif Imran Shariff - Backend
- - Shaikh Moinuddin - Frontend & Leader
+ - Shaikh Moinuddin - Frontend
