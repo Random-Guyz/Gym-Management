@@ -1,4 +1,4 @@
-# Gym Management <br /> Made with Flutter
+# Gym Management <br /> Made with Flutter [Download](https://github.com/Random-Guyz/Gym-Management/blob/master/app.apk)
 
 **Important Installation Notice: Please Read Before Proceeding**
 
