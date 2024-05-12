@@ -51,7 +51,7 @@ By installing this app from a source other than the official app store, you ackn
 |:---:|
 |![add_member](https://github.com/Random-Guyz/Gym-Management/assets/93507427/460087dd-d3d6-45d0-bd43-af5eb9c52f35) |
 
-| Assign a trainer to member |
+| Assign a member to trainer |
 |:---:|
 |![asign](https://github.com/Random-Guyz/Gym-Management/assets/93507427/5f7ae49b-1021-4901-ba58-7cecc6f52c6a) |
 
@@ -61,7 +61,7 @@ By installing this app from a source other than the official app store, you ackn
 
 # Team Member
 
-|[<img src="https://avatars.githubusercontent.com/u/93507427?v=4" style="max-width: 50%; height: auto;"/>](https://github.com/Kaif-Shariff)|[<img src="https://avatars.githubusercontent.com/u/98759447?v=4" style="max-width: 50%; height: auto;"/>](https://github.com/Skmoin5502)|
+|[<img src="https://avatars.githubusercontent.com/u/93507427?v=4" style="max-width: 50%; height: auto;"/>](https://github.com/Kaif-Shariff)|[<img src="https://avatars.githubusercontent.com/u/98759447?v=4" style="max-width: 30%; height: auto;"/>](https://github.com/Skmoin5502)|
 |---|---|
 | Backend | Frontend |
 | [Kaif Shariff](https://github.com/Kaif-Shariff) | [Shaikh Moinuddin](https://github.com/Skmoin5502) |
