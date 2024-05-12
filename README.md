@@ -21,6 +21,11 @@ By installing this app from a source other than the official app store, you ackn
 
 ## Demo Accounts
 
+| Owner | Member | Trainer |
+|---|---|---|
+| Email: demo@demo.com | Email: rocket@gmail.com | Email: donald@gmail.com |
+| Pass: demo | Pass: rocket | Pass: donald |
+
 **Owner**
 - Email: demo@demo.com
 - password: demo
